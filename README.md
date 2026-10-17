@@ -68,3 +68,21 @@ This section has moved here: [https://facebook.github.io/create-react-app/docs/d
 ### `npm run build` fails to minify
 
 This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+# Boxer Sports Wear
+
+## Product catalog setup (no backend)
+
+The storefront reads its product and carousel lists from separate public Google Sheet CSVs directly in the browser. It shows loading and configuration or network errors instead of sample products.
+
+1. Use `catalog-template.csv` for the product sheet. Required columns: `productName`, `price`, `driveLink` (or `imageUrl`). Optional columns: `id`, `category`, `badge`, `meeshoUrl`, and `shopLink`. `Explore Meesho Shop` uses `meeshoUrl`, then `shopLink`, then the Meesho homepage placeholder.
+2. Upload each product image to Google Drive and set it to **Anyone with the link – Viewer**. Paste the complete Drive share link into `driveLink`; or use an accessible HTTPS image URL in `imageUrl`.
+3. Use `carousel-template.csv` for the separate carousel sheet. Add `imageName` and the complete public Drive link in `driveUrl` for each slide.
+4. Publish both sheets to the web as CSV. Set their export URLs in `.env.local` as `REACT_APP_CATALOG_CSV_URL` and `REACT_APP_CAROUSEL_CSV_URL`. `.env.example` shows the URL formats. Restart the development server after changing environment values; add both variables to your static hosting provider for deployment.
+
+There is no cart or checkout on this site: each product card opens its Meesho listing in a new tab, where the buyer can choose variants and complete the purchase. Google Drive and the published sheet must be publicly readable; anyone can access that catalog and its image links. Do not put private customer or seller data in the sheet. Sheet changes can take a short time to appear because Google may cache published exports.
+
+The page supports case-insensitive search and filters, price sorting, responsive product cards, a show-more control, and a sheet-powered carousel. Product rows without a name, valid image URL, or HTTPS shop destination are ignored. Catalog and carousel load errors are shown on the page.
+
+## Local development
+
+Run `npm start` to launch the React app. Run `npm run build` to create a production bundle.

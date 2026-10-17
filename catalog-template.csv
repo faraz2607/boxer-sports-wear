@@ -1,0 +1,3 @@
+id,productName,category,price,badge,driveLink,meeshoUrl,shopLink
+BX-201,Sample Everyday Lower,Lower,599,Bestseller,https://drive.google.com/file/d/REPLACE_WITH_FILE_ID/view,https://www.meesho.com/REPLACE_WITH_PRODUCT,https://www.meesho.com/REPLACE_WITH_SHOP
+BX-202,Sample T-Shirt,T-Shirt,399,New,https://drive.google.com/file/d/REPLACE_WITH_FILE_ID/view,,https://www.meesho.com/REPLACE_WITH_SHOP

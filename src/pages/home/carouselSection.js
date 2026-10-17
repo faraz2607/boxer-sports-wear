@@ -1,90 +1,125 @@
-// Carousel.js
-import React from 'react';
-import Slider from 'react-slick';
-import 'slick-carousel/slick/slick.css';
-import 'slick-carousel/slick/slick-theme.css';
+import { useEffect, useState } from "react";
+import { csvValue, parseCsvRows } from "../../common/csv";
+import { resolveProductImage } from "./products";
+
+const carouselCsvUrl = process.env.REACT_APP_CAROUSEL_CSV_URL;
+
+const getSlideImage = (record) => {
+  const driveLink = csvValue(record, "drivelink", "driveurl", "googledrivelink", "imageurl", "image");
+  const imageUrl = resolveProductImage(driveLink);
+  const driveId = driveLink.match(/\/file\/d\/([^/?]+)/)?.[1] || driveLink.match(/[?&]id=([^&]+)/)?.[1];
+  return {
+    name: csvValue(record, "imagename", "name", "title") || "Boxer Sports Wear",
+    imageUrl,
+    fallbacks: driveId ? [
+      `https://drive.google.com/thumbnail?id=${encodeURIComponent(driveId)}&sz=w1600`,
+      `https://drive.google.com/uc?export=view&id=${encodeURIComponent(driveId)}`,
+    ] : [],
+    previewUrl: driveId ? `https://drive.google.com/file/d/${encodeURIComponent(driveId)}/preview` : "",
+  };
+};
 
 const CarouselSection = () => {
-  return (<div className='grid grid-cols-1 md:grid-cols-2 pb-4 md:pb-8 gap-4 md:gap-8'>
-    <TextContainer className="flex-shrink-0 w-1/2 p-8"/>
-    <Carousel />
-    </div>
-  )
-};
-export default CarouselSection;
+  const [slides, setSlides] = useState([]);
+  const [activeSlide, setActiveSlide] = useState(1);
+  const [transitionEnabled, setTransitionEnabled] = useState(true);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
-const TextContainer = () => {
-  return (
-    <div class="bg-green-35 p-4 md:p-8 rounded-lg shadow-md order-last md:order-first">
-    <h1 class="text-xl md:text-3xl font-bold mb-3 md:mb-6">Unleash Your Style, Embrace the Comfort!</h1>
+  useEffect(() => {
+    let active = true;
+    const loadSlides = async () => {
+      if (!carouselCsvUrl) throw new Error("Carousel sheet is not configured yet.");
+      const response = await fetch(carouselCsvUrl);
+      if (!response.ok) throw new Error(`Carousel images could not be loaded (HTTP ${response.status}).`);
+      const loadedSlides = parseCsvRows(await response.text()).map(getSlideImage).filter((slide) => slide.imageUrl);
+      if (!loadedSlides.length) throw new Error("No carousel images were found in the published sheet.");
+      return loadedSlides;
+    };
 
-    <p class="text-md md:text-lg mb-2 md:mb-4">
-        <span class="font-bold">Ignite Your Potential in Every Stride: </span>
-        Experience comfort and performance with Boxer Wear's meticulously crafted pants and lowers designed for optimal style and movement.
-    </p>
+    loadSlides()
+      .then((loadedSlides) => { if (active) setSlides(loadedSlides); })
+      .catch((loadError) => { if (active) setError(loadError.message || "Carousel images could not be loaded."); })
+      .finally(() => { if (active) setLoading(false); });
 
-    <p class="text-md md:text-lg mb-2 md:mb-4">
-        <span class="font-bold">Precision Fit, Effortless Style: </span>
-        Our pants and lowers offer a tailored fit that accentuates your natural contours, ensuring you move with confidence and style.
-    </p>
+    return () => { active = false; };
+  }, []);
 
-    <p class="text-md md:text-lg ">
-        <span class="font-bold">Versatile Designs for Every Occasion: </span>
-        From workouts to casual outings, Boxer Wear's versatile collection of pants and lowers effortlessly combines fashion with functionality, catering to your diverse lifestyle.
-    </p>
-</div>
+  useEffect(() => {
+    if (slides.length < 2) return undefined;
+    const intervalId = window.setInterval(() => setActiveSlide((index) => index + 1), 5000);
+    return () => window.clearInterval(intervalId);
+  }, [slides.length]);
 
-  );
-};
+  const hasLoopClones = slides.length > 1;
+  const carouselSlides = hasLoopClones ? [slides[slides.length - 1], ...slides, slides[0]] : slides;
+  const physicalSlide = hasLoopClones ? activeSlide : 0;
+  const logicalSlide = hasLoopClones
+    ? (activeSlide - 1 + slides.length) % slides.length
+    : 0;
+  const selectSlide = (index) => setActiveSlide(hasLoopClones ? index + 1 : index);
 
-const Carousel = () => {
-  const settings = {
-    dots: false,
-    arrows: false,
-    infinite: true,
-    speed: 1000,
-    slidesToShow: 1, // Display only one image at a time
-    slidesToScroll: 1,
-    autoplay: true, // Auto-play slides
-    autoplaySpeed: 5000, // Set the speed for auto-play in milliseconds (adjust as needed)
+  const handleTrackTransitionEnd = (event) => {
+    if (event.propertyName !== "transform" || !hasLoopClones) return;
+    if (activeSlide === 0 || activeSlide === slides.length + 1) {
+      setTransitionEnabled(false);
+      setActiveSlide(activeSlide === 0 ? slides.length : 1);
+      window.requestAnimationFrame(() => window.requestAnimationFrame(() => setTransitionEnabled(true)));
+    }
   };
 
+  if (loading) return <div className="carousel-state" role="status">Loading featured styles…</div>;
+  if (error) return <div className="carousel-state carousel-error" role="status">{error} Add <code>REACT_APP_CAROUSEL_CSV_URL</code> when your carousel sheet is ready.</div>;
+
+  const slide = slides[logicalSlide];
   return (
-    <Slider {...settings}>
-      {/* Carousel Item 1 */}
-      <div>
-        <div className="relative">
-          <img src="/images/boxer-tag-slide-1.jpeg" alt="Slide 1" className="w-full h-60 md:h-96" /> 
-          <div className="absolute top-0 left-0 p-4">
-            {/* <h3 className="text-xl font-bold">Catchy Phrase 1</h3>
-            <p>Additional description or details.</p> */}
-          </div>
+    <section className="store-carousel" aria-label="Featured styles">
+      <div className="carousel-frame">
+        <div
+          className="carousel-track"
+          onTransitionEnd={handleTrackTransitionEnd}
+          style={{ transform: `translate3d(-${physicalSlide * 100}%, 0, 0)`, transition: transitionEnabled ? undefined : "none" }}
+        >
+          {carouselSlides.map((slideItem, index) => (
+            <div className="carousel-slide" key={`${slideItem.imageUrl}-${index}`}>
+              <img
+                className="carousel-image"
+                src={slideItem.imageUrl}
+                data-fallbacks={JSON.stringify(slideItem.fallbacks)}
+                alt={slideItem.name}
+                onError={(event) => {
+                  const image = event.currentTarget;
+                  const fallbacks = JSON.parse(image.dataset.fallbacks || "[]");
+                  const nextUrl = fallbacks.shift();
+                  image.dataset.fallbacks = JSON.stringify(fallbacks);
+                  if (nextUrl) image.src = nextUrl;
+                  else {
+                    image.classList.add("carousel-image-missing");
+                    if (slideItem.previewUrl) image.parentElement.classList.add("carousel-show-preview");
+                  }
+                }}
+              />
+              {slideItem.previewUrl && <iframe className="carousel-drive-preview" src={slideItem.previewUrl} title={`${slideItem.name} image preview`} loading="lazy" tabIndex="-1" aria-hidden="true" />}
+            </div>
+          ))}
+        </div>
+        <div className="carousel-shade" />
+        <div className="carousel-copy">
+          <p className="eyebrow">BOXER SPORTS WEAR &middot; THE COLLECTION</p>
+          <h2>{slide.name}</h2>
+          <a href="#catalogue" className="carousel-shop-link">Explore the collection <span aria-hidden="true">&#8595;</span></a>
+        </div>
+        <div className="carousel-controls">
+          <button type="button" onClick={() => setActiveSlide((index) => index - 1)} aria-label="Previous slide">&#8592;</button>
+          <span>{String(logicalSlide + 1).padStart(2, "0")} <i>/</i> {String(slides.length).padStart(2, "0")}</span>
+          <button type="button" onClick={() => setActiveSlide((index) => index + 1)} aria-label="Next slide">&#8594;</button>
+        </div>
+        <div className="carousel-dots" aria-label="Choose a featured image">
+          {slides.map((item, index) => <button key={`${item.name}-${index}`} type="button" className={index === logicalSlide ? "active" : ""} onClick={() => selectSlide(index)} aria-label={`Show ${item.name}`} aria-current={index === logicalSlide ? "true" : undefined} />)}
         </div>
       </div>
-
-      {/* Carousel Item 2 */}
-      <div>
-        <div className="relative">
-          <img src="/images/white-lower-slide-2.jpeg" alt="Slide 2" className="w-full h-60 md:h-96" /> 
-          <div className="absolute top-0 left-0 text-white p-4">
-            {/* <h3 className="text-xl font-bold">Catchy Phrase 2</h3>
-            <p>Additional description or details.</p> */}
-          </div>
-        </div>
-      </div>
-
-      {/* Carousel Item 3 */}
-      <div>
-        <div className="relative">
-          <img src="/images/black-lower-slide-3.jpeg" alt="Slide 3" className="w-full h-60 md:h-96" /> 
-          <div className="absolute top-0 left-0 text-white p-4">
-            {/* <h3 className="text-xl font-bold">Catchy Phrase 3</h3>
-            <p>Additional description or details.</p> */}
-          </div>
-        </div>
-      </div>
-
-      {/* Add more items as needed */}
-    </Slider>
+    </section>
   );
 };
+
+export default CarouselSection;

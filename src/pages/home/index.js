@@ -11,18 +11,19 @@ const Index = () => {
         <>
         {/* <Layout page={<Home />}/> */}
         <Header />
-        <div className="bg-green-5 px-4">
-            <div className="container mx-auto ">
-                <HeroSection />
-                <CarouselSection />
+        <main id="top">
+            <div className="page-container">
+                <div className="hero-feature-grid">
+                    <HeroSection />
+                    <CarouselSection />
+                </div>
             </div>
-        </div>
-        <div className="bg-green-15 px-4">
-            <div className="container mx-auto ">
+            <div className="catalogue-wrap">
+                <div className="page-container">
                 <Catalogue />
-                {/* <Home /> */}
+                </div>
             </div>
-        </div>
+        </main>
         <Footer />
         </>
     )

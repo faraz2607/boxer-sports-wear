@@ -3,19 +3,17 @@
 // Header.js
 import React from 'react';
 
+const meeshoShopUrl = process.env.REACT_APP_MEESHO_SHOP_URL || 'https://www.meesho.com/';
+
 const Header = () => {
   return (
-    <header className="bg-green-25 p-4">
-      <div className="container mx-auto text-center md:flex md:justify-between items-center">
-        <div>
-          <h1 className="text-2xl font-bold md:text-start">Boxer Sports Wear</h1>
-        </div>
-        <nav>
-          <ul className="flex justify-center space-x-4 mt-2 md:mt-0 font-bold">
-            <li><a href="#" className="">Home</a></li>
-            {/* <li><a href="#about" className="">About</a></li> */}
-            <li><a href="#contact" className="">Contact us</a></li>
-          </ul>
+    <header className="site-header">
+      <div className="page-container header-inner">
+        <a className="brand-mark" href="#top" aria-label="Boxer Sports Wear home"><img className="brand-logo" src="/images/boxer-logo.jpeg" alt="Boxer" /><span className="brand-descriptor">SPORTS WEAR<small>MADE FOR EVERYDAY</small></span></a>
+        <nav className="header-nav" aria-label="Main navigation">
+          <a href="#catalogue">Our collection</a>
+          <a href="#contact">Contact</a>
+          <a href={meeshoShopUrl} className="header-shop" target="_blank" rel="noreferrer">Shop Meesho<span aria-hidden="true">&#8599;</span></a>
         </nav>
       </div>
     </header>
