@@ -13,7 +13,7 @@ const Header = () => {
         <nav className="header-nav" aria-label="Main navigation">
           <a href="#catalogue">Our collection</a>
           <a href="#contact">Contact</a>
-          <a href={meeshoShopUrl} className="header-shop" target="_blank" rel="noreferrer">Shop Meesho<span aria-hidden="true">&#8599;</span></a>
+          <a href={meeshoShopUrl} className="header-shop" target="_blank" rel="noreferrer">Shop Meesho<span aria-hidden="true"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M7 17 17 7" /><path d="M7 7h10v10" /></svg></span></a>
         </nav>
       </div>
     </header>
