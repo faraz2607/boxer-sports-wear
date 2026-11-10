@@ -1,7 +1,7 @@
 export const parseCsvRows = (text) => {
   const rows = [];
   let row = [];
-  let cell = "";
+  let cell = '';
   let quoted = false;
 
   for (let index = 0; index < text.length; index += 1) {
@@ -11,15 +11,15 @@ export const parseCsvRows = (text) => {
       index += 1;
     } else if (char === '"') {
       quoted = !quoted;
-    } else if (char === "," && !quoted) {
+    } else if (char === ',' && !quoted) {
       row.push(cell.trim());
-      cell = "";
-    } else if ((char === "\n" || char === "\r") && !quoted) {
-      if (char === "\r" && text[index + 1] === "\n") index += 1;
+      cell = '';
+    } else if ((char === '\n' || char === '\r') && !quoted) {
+      if (char === '\r' && text[index + 1] === '\n') index += 1;
       row.push(cell.trim());
       if (row.some(Boolean)) rows.push(row);
       row = [];
-      cell = "";
+      cell = '';
     } else {
       cell += char;
     }
@@ -29,9 +29,29 @@ export const parseCsvRows = (text) => {
   if (row.some(Boolean)) rows.push(row);
   if (rows.length < 2) return [];
 
-  const headers = rows.shift().map((header) => header.trim().toLowerCase().replace(/[\s_-]/g, ""));
-  return rows.map((cells) => Object.fromEntries(headers.map((header, column) => [header, cells[column] || ""])));
+  const headers = rows.shift().map((header) =>
+    header
+      .trim()
+      .toLowerCase()
+      .replace(/[\s_-]/g, ''),
+  );
+  return rows.map((cells) =>
+    Object.fromEntries(headers.map((header, column) => [header, cells[column] || ''])),
+  );
 };
 
 export const csvValue = (record, ...keys) =>
-  keys.map((key) => record[key]).find((value) => value !== undefined && value !== "") || "";
+  keys.map((key) => record[key]).find((value) => value !== undefined && value !== '') || '';
+
+export const loadCsvText = async ({ url = '', label }) => {
+  if (!url) throw new Error(`${label} is not configured. Set its published Google Sheets CSV URL.`);
+  const response = await fetch(url, { cache: 'no-store' });
+  if (!response.ok) {
+    const detail =
+      response.status === 400
+        ? ' Check the spreadsheet ID and tab gid in the CSV URL, and make sure the sheet is accessible to anyone with the link.'
+        : '';
+    throw new Error(`${label} CSV could not be loaded (HTTP ${response.status}).${detail}`);
+  }
+  return response.text();
+};

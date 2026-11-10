@@ -3,12 +3,24 @@ import ReactDOM from 'react-dom/client';
 import './index.css';
 import reportWebVitals from './reportWebVitals';
 import Index from './pages/home';
+import AdminApp from './pages/admin';
+import { ROUTES } from './common/siteConfig';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
+const App = () => {
+  const path = window.location.pathname.replace(/\/+$/, '') || '/';
+  if (path === ROUTES.legacyLogin) {
+    window.history.replaceState({}, '', ROUTES.adminLogin);
+    return <AdminApp />;
+  }
+  if (path.startsWith('/admin')) return <AdminApp />;
+  return <Index />;
+};
+
 root.render(
   <React.StrictMode>
-    <Index />
-  </React.StrictMode>
+    <App />
+  </React.StrictMode>,
 );
 
 // If you want to start measuring performance in your app, pass a function

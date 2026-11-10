@@ -1,65 +1,95 @@
-import { csvValue, parseCsvRows } from "../../common/csv";
+import { csvValue, loadCsvText, parseCsvRows } from '../../common/csv';
+import { CSV_SOURCES, SHOP_URL } from '../../common/siteConfig';
 
-const catalogCsvUrl = process.env.REACT_APP_CATALOG_CSV_URL;
-const shopLinkPlaceholder = "https://www.meesho.com/";
+const shopLinkPlaceholder = SHOP_URL;
 
-export const resolveProductImage = (driveLink = "", imageUrl = "") => {
+export const resolveProductImage = (driveLink = '', imageUrl = '') => {
   const link = driveLink.trim() || imageUrl.trim();
-  if (!link) return "";
+  if (!link) return '';
 
   try {
     const parsed = new URL(link);
-    if (["drive.google.com", "www.drive.google.com"].includes(parsed.hostname)) {
-      const fileId = parsed.pathname.match(/\/file\/d\/([^/]+)/)?.[1] || parsed.searchParams.get("id");
+    if (['drive.google.com', 'www.drive.google.com'].includes(parsed.hostname)) {
+      const fileId =
+        parsed.pathname.match(/\/file\/d\/([^/]+)/)?.[1] || parsed.searchParams.get('id');
       if (fileId) {
-        const resourceKey = parsed.searchParams.get("resourcekey");
-        return `https://lh3.googleusercontent.com/d/${encodeURIComponent(fileId)}${resourceKey ? `?resourcekey=${encodeURIComponent(resourceKey)}` : ""}`;
+        const resourceKey = parsed.searchParams.get('resourcekey');
+        return `https://lh3.googleusercontent.com/d/${encodeURIComponent(fileId)}${resourceKey ? `?resourcekey=${encodeURIComponent(resourceKey)}` : ''}`;
       }
     }
-    return parsed.protocol === "https:" ? link : "";
+    return parsed.protocol === 'https:' ? link : '';
   } catch {
-    return "";
+    return '';
   }
 };
 
 const mapProduct = (record, index) => {
-  const driveLink = csvValue(record, "drivelink", "driveurl", "googledrivelink", "googledriveurl", "driveimagelink", "imagelink", "googleimageurl");
-  const driveFileId = csvValue(record, "drivefileid", "fileid");
-  const imageUrl = resolveProductImage(
-    driveLink || (driveFileId ? `https://drive.google.com/file/d/${encodeURIComponent(driveFileId)}/view` : ""),
-    csvValue(record, "imageurl", "image")
+  const driveLink = csvValue(
+    record,
+    'drivelink',
+    'driveurl',
+    'googledrivelink',
+    'googledriveurl',
+    'driveimagelink',
+    'imagelink',
+    'googleimageurl',
   );
-  const explicitMeeshoLink = csvValue(record, "meeshourl", "meesholink", "producturl");
-  const shopUrl = explicitMeeshoLink || csvValue(record, "shopurl", "shoplink", "link") || shopLinkPlaceholder;
+  const driveFileId = csvValue(record, 'drivefileid', 'fileid');
+  const imageUrl = resolveProductImage(
+    driveLink ||
+      (driveFileId
+        ? `https://drive.google.com/file/d/${encodeURIComponent(driveFileId)}/view`
+        : ''),
+    csvValue(record, 'imageurl', 'image'),
+  );
+  const explicitMeeshoLink = csvValue(
+    record,
+    'meeshoproducturl',
+    'meeshourl',
+    'meesholink',
+    'producturl',
+  );
+  const shopUrl = explicitMeeshoLink || shopLinkPlaceholder;
   const driveId = driveLink.match(/\/file\/d\/([^/?]+)/)?.[1] || driveFileId;
-  const price = Number(csvValue(record, "price", "priceinr")) || 0;
-  const discount = Math.min(100, Math.max(0, Number(String(csvValue(record, "discount", "discountpercent", "discountpercentage")).replace(/%/g, "")) || 0));
+  const price = Number(csvValue(record, 'price', 'priceinr')) || 0;
+  const discount = Math.min(
+    100,
+    Math.max(
+      0,
+      Number(
+        String(csvValue(record, 'discount', 'discountpercent', 'discountpercentage')).replace(
+          /%/g,
+          '',
+        ),
+      ) || 0,
+    ),
+  );
 
   return {
-    id: csvValue(record, "id", "sku") || `product-${index + 1}`,
-    name: csvValue(record, "productname", "name"),
-    category: csvValue(record, "category"),
+    id: csvValue(record, 'id', 'sku') || `product-${index + 1}`,
+    name: csvValue(record, 'productname', 'name'),
+    category: csvValue(record, 'category'),
     price,
     discount,
     discountedPrice: discount ? Math.round(price * (1 - discount / 100)) : price,
-    badge: csvValue(record, "badge", "tag"),
+    badge: csvValue(record, 'badge', 'tag'),
     imageUrl,
-    imageFallbackUrls: driveId ? [
-      `https://drive.google.com/thumbnail?id=${encodeURIComponent(driveId)}&sz=w1200`,
-      `https://drive.google.com/uc?export=view&id=${encodeURIComponent(driveId)}`,
-    ] : [],
-    imagePreviewUrl: driveId ? `https://drive.google.com/file/d/${encodeURIComponent(driveId)}/preview` : "",
+    imageFallbackUrls: driveId
+      ? [
+          `https://drive.google.com/thumbnail?id=${encodeURIComponent(driveId)}&sz=w1200`,
+          `https://drive.google.com/uc?export=view&id=${encodeURIComponent(driveId)}`,
+        ]
+      : [],
+    imagePreviewUrl: driveId
+      ? `https://drive.google.com/file/d/${encodeURIComponent(driveId)}/preview`
+      : '',
     shopUrl,
   };
 };
 
 export const loadProducts = async () => {
-  if (!catalogCsvUrl) throw new Error("Product catalog URL is missing. Add REACT_APP_CATALOG_CSV_URL to .env.local.");
-
-  const response = await fetch(catalogCsvUrl);
-  if (!response.ok) throw new Error(`Product catalog could not be loaded (HTTP ${response.status}).`);
-
-  return parseCsvRows(await response.text())
+  const csvText = await loadCsvText({ ...CSV_SOURCES.catalog, label: 'Product catalog' });
+  return parseCsvRows(csvText)
     .map(mapProduct)
     .filter((product) => product.name && product.imageUrl && /^https:\/\//i.test(product.shopUrl));
 };
