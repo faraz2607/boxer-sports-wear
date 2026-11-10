@@ -151,7 +151,6 @@ const Catalogue = () => {
               {product.imagePreviewUrl && <iframe className="drive-image-preview" src={product.imagePreviewUrl} title={`${product.name} image preview`} loading="lazy" tabIndex="-1" aria-hidden="true" />}
               {product.badge && <span className={`product-badge badge-${badgeTone(product.badge)}`}>{sentenceCase(product.badge)}</span>}
               {product.id && <span className="product-id card-product-id">{product.id}</span>}
-              <span className="image-cta">Discover More</span>
             </a>
             <div className="product-card-content">
               <div className="product-detail-row">
@@ -159,8 +158,11 @@ const Catalogue = () => {
                   <h3>{product.name}</h3>
                   <span className="product-category">{sentenceCase(product.category)}</span>
                 </div>
-                <p className="product-price"><small>PRICE</small><strong>{"\u20B9"}{Number(product.price).toLocaleString("en-IN")}</strong></p>
+                <p className="product-price">
+                  {product.discount > 0 ? <><strong>{"\u20B9"}{Number(product.discountedPrice).toLocaleString("en-IN")}</strong><del>{"\u20B9"}{Number(product.price).toLocaleString("en-IN")}</del><span className="product-discount">{product.discount}% off</span></> : <strong>{"\u20B9"}{Number(product.price).toLocaleString("en-IN")}</strong>}
+                </p>
               </div>
+              <a className="meesho-button" href={product.shopUrl} target="_blank" rel="noreferrer">Buy Now</a>
             </div>
           </article>
         ))}

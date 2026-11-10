@@ -32,12 +32,16 @@ const mapProduct = (record, index) => {
   const explicitMeeshoLink = csvValue(record, "meeshourl", "meesholink", "producturl");
   const shopUrl = explicitMeeshoLink || csvValue(record, "shopurl", "shoplink", "link") || shopLinkPlaceholder;
   const driveId = driveLink.match(/\/file\/d\/([^/?]+)/)?.[1] || driveFileId;
+  const price = Number(csvValue(record, "price", "priceinr")) || 0;
+  const discount = Math.min(100, Math.max(0, Number(String(csvValue(record, "discount", "discountpercent", "discountpercentage")).replace(/%/g, "")) || 0));
 
   return {
     id: csvValue(record, "id", "sku") || `product-${index + 1}`,
     name: csvValue(record, "productname", "name"),
     category: csvValue(record, "category"),
-    price: Number(csvValue(record, "price", "priceinr")) || 0,
+    price,
+    discount,
+    discountedPrice: discount ? Math.round(price * (1 - discount / 100)) : price,
     badge: csvValue(record, "badge", "tag"),
     imageUrl,
     imageFallbackUrls: driveId ? [

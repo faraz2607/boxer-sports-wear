@@ -1447,6 +1447,112 @@ html { scroll-behavior: smooth; }
     transition-duration: .01ms !important;
   }
 }
+
+/* Clearer contrast across the catalog and a bounded, independently scrollable product list. */
+:root {
+  --ink: #202a22;
+  --muted-ink: #596258;
+  --soft-ink: #687267;
+  --brand-green: #294b35;
+  --page-bg: #f7f8f5;
+  --surface: #fff;
+  --line: #d9dfd7;
+}
+body { color: var(--ink); background: var(--page-bg); }
+.site-header { background: var(--page-bg); }
+.catalogue-wrap { background: #eef2ec; }
+.catalogue-section { color: var(--ink); }
+.catalogue-heading h2, .product-card-heading h3, .fabric-guide-copy h3 { color: #202a22; }
+.eyebrow, .hero-kicker { color: #4c673c; }
+.section-copy, .hero-section > p, .intro-copy > p:not(.eyebrow), .catalogue-note { color: #596258; }
+.product-grid-scroll {
+  max-height: min(76vh, 920px);
+  min-height: 360px;
+  overflow: auto;
+  overscroll-behavior: contain;
+  scrollbar-gutter: stable;
+  padding: 2px 8px 12px 2px;
+  border-radius: 12px;
+  scrollbar-color: #82947f #e2e8df;
+  scrollbar-width: thin;
+}
+.product-grid-scroll::-webkit-scrollbar { width: 10px; }
+.product-grid-scroll::-webkit-scrollbar-track { background: #e2e8df; border-radius: 10px; }
+.product-grid-scroll::-webkit-scrollbar-thumb { background: #82947f; border: 2px solid #e2e8df; border-radius: 10px; }
+.product-card { background: #fff; border-color: #d9dfd7; }
+.product-badge { font-size: 9px; letter-spacing: .04em; box-shadow: 0 1px 5px #202a221a; }
+.product-badge.badge-latest { color: #174f31; background: #d9f0df; }
+.product-badge.badge-trending { color: #684000; background: #ffedbd; }
+.product-badge.badge-best { color: #604700; background: #f3e3ad; }
+.product-badge.badge-offer { color: #802d27; background: #ffe1dc; }
+.product-badge.badge-classic { color: #303b32; background: #e5ebe4; }
+.card-product-id { color: #39453c; border-color: #d9dfd7; background: #fff; font-weight: 700; }
+.product-category, .product-id { color: #596258; }
+.product-price { color: #203b29; }
+.product-price del { color: #626a63; }
+.product-price .product-discount { color: #14713b; }
+.search-box, .catalogue-filter-trigger, .clear-filters-button, .catalogue-results { color: #26342a; background: #fff; border-color: #cbd4ca; }
+.search-box input { color: #26342a; }
+.search-box input::placeholder { color: #667168; opacity: 1; }
+.catalogue-filter-value, .catalogue-results strong { color: #24352a; }
+.catalogue-results { color: #4e5a50; }
+.clear-filters-button { color: #8b332e; border-color: #dfbcb7; }
+.clear-filters-button:disabled { color: #6c716d; border-color: #d6dcd5; background: #f4f6f3; }
+.catalogue-loading-indicator { color: #3f5643; border-color: #d4ddd3; background: #f7faf6; }
+.fabric-guide { color: #26352a; background: #e4ebe1; border-color: #cdd9cb; }
+.fabric-guide-copy > p:last-child, .fabric-guide-points { color: #465449; }
+.empty-state { color: #4e5a50; }
+.empty-state h3 { color: #202a22; }
+.site-footer { background: #1e3928; }
+
+@media (max-width: 760px) {
+  .hero-feature-grid { gap: 6px; padding-block: 4px 22px; }
+  .hero-feature-grid .hero-section { min-height: 310px; padding: 24px 0 46px; }
+  .hero-feature-grid .carousel-frame { height: clamp(235px, 62vw, 320px); }
+  .catalogue-section { padding-top: 30px; padding-bottom: 34px; }
+  .catalogue-heading h2 { margin: 8px 0; }
+  .catalogue-toolbar { margin-top: 14px; padding: 10px 0; }
+  .product-grid-scroll { max-height: 68vh; min-height: 300px; padding-right: 5px; }
+  .product-grid { gap: 12px 9px; }
+  .product-card-content { padding: 8px; }
+  .product-card-heading h3 { color: #202a22; }
+  .product-price strong { font-size: 14px; }
+  .product-price del { font-size: 10px; }
+  .product-price .product-discount { font-size: 9px; }
+  .fabric-guide { margin-top: 14px; padding: 14px 12px; gap: 10px; }
+  .fabric-guide-copy > p:last-child { font-size: 10px; }
+  .site-footer { padding: 28px 0 14px; }
+  .footer-inner { gap: 16px; padding-bottom: 18px; }
+}
+
+/* Product actions and sale pricing stay visible without hover on touch screens. */
+.product-image-link .image-cta { display: none; }
+.product-card:hover { transform: none; box-shadow: 0 3px 12px #2935220d; }
+.product-image-link:hover img { transform: none; }
+.product-price {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: flex-end;
+  gap: 3px 6px;
+  white-space: normal;
+}
+.product-price del {
+  color: #898a84;
+  font: 500 11px Manrope, sans-serif;
+}
+.product-price .product-discount {
+  color: #168443;
+  font: 700 10px Manrope, sans-serif;
+}
+.meesho-button {
+  text-decoration: none;
+  margin-top: 10px;
+}
+@media (hover: hover) and (pointer: fine) {
+  .product-card:hover { transform: translateY(-3px); box-shadow: 0 12px 28px #29352212; }
+  .product-image-link:hover img { transform: scale(1.02); }
+}
 /* Keep the hero copy on the left and feature the sheet carousel on the right. */
 .hero-feature-grid {
   display: grid;
@@ -1593,4 +1699,47 @@ html { scroll-behavior: smooth; }
   .carousel-image {
     transition: none;
   }
+}
+
+/* Compact mobile controls; keep the header Shop Now button at its current size. */
+@media (max-width: 760px) {
+  .hero-button,
+  .carousel-shop-link,
+  .meesho-button,
+  .empty-state button,
+  .clear-filters-button {
+    min-height: 34px;
+    padding-top: 7px;
+    padding-bottom: 7px;
+  }
+  .hero-button { padding-inline: 14px; }
+  .carousel-shop-link { padding-inline: 13px; }
+  .meesho-button { min-height: 34px; }
+  .carousel-controls button { height: 30px; width: 32px; }
+  .search-box,
+  .catalogue-filter-trigger,
+  .clear-filters-button,
+  .catalogue-results {
+    height: 36px;
+    min-height: 36px;
+    background-color: #e9efe8;
+    border-color: #c5d1c4;
+  }
+  .search-box input { background: transparent; }
+  .catalogue-filter-trigger:hover { background-color: #e1e9df; }
+  .catalogue-results { color: #3e5142; }
+  .catalogue-results strong { color: #1f482d; }
+  .clear-filters-button { background-color: #f7eae7; border-color: #e3c6c1; }
+  .clear-filters-button:disabled { background-color: #eef1ed; }
+  .product-price {
+    display: grid;
+    grid-template-columns: auto auto;
+    justify-items: end;
+    align-items: baseline;
+    column-gap: 5px;
+    row-gap: 1px;
+  }
+  .product-price strong { grid-column: 1 / -1; grid-row: 1; }
+  .product-price del { grid-column: 1; grid-row: 2; }
+  .product-price .product-discount { grid-column: 2; grid-row: 2; }
 }
