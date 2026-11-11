@@ -5,6 +5,7 @@ Boxer Sports Wear is a React storefront backed by published Google Sheets CSV ex
 ## Documentation
 
 - [Setup and deployment](./docs/SETUP.md): requirements, environment variables, local development, builds, and hosting notes.
+- [Set up another store](./docs/NEXT_STORE_SETUP.md): update store copy, images, data sources, metadata, and styling when reusing this codebase.
 - [Feature guide](./docs/FEATURES.md): customer storefront and admin workflows.
 - [Product specification](./docs/SPECIFICATION.md): routes, data contracts, validation, behavior, and known boundaries.
 - [Project guide](./PROJECT_GUIDE.md): source tree and data flow.

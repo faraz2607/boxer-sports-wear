@@ -1,6 +1,7 @@
 // Header.js
 import React, { useEffect, useState } from 'react';
-import { ROUTES, SHOP_URL } from '../siteConfig';
+import { ROUTES } from '../constants';
+import { SHOP_URL, STORE_ASSETS, STORE_CONTENT } from '../storeConstants';
 
 const Header = () => {
   const [showAdminLink, setShowAdminLink] = useState(
@@ -16,22 +17,23 @@ const Header = () => {
   return (
     <header className="site-header">
       <div className="page-container header-inner">
-        <a className="brand-mark" href="#top" aria-label="Boxer Sports Wear home">
-          <img className="brand-logo" src="/images/boxer-logo.jpeg" alt="Boxer" />
+        <a className="brand-mark" href="#top" aria-label={STORE_CONTENT.brand.homeLinkLabel}>
+          <img className="brand-logo" src={STORE_ASSETS.logo} alt={STORE_CONTENT.brand.logoAlt} />
           <span className="brand-descriptor">
-            SPORTS WEAR<small>MADE FOR EVERYDAY</small>
+            {STORE_CONTENT.brand.descriptor}
+            <small>{STORE_CONTENT.brand.tagline}</small>
           </span>
         </a>
-        <nav className="header-nav" aria-label="Main navigation">
-          <a href="#catalogue">Our collection</a>
-          <a href="#contact">Contact</a>
+        <nav className="header-nav" aria-label={STORE_CONTENT.header.navigationLabel}>
+          <a href="#catalogue">{STORE_CONTENT.header.collectionLink}</a>
+          <a href="#contact">{STORE_CONTENT.header.contactLink}</a>
           {showAdminLink && (
             <a href={ROUTES.adminDashboard} className="header-admin-link">
-              Go to Admin
+              {STORE_CONTENT.header.adminLink}
             </a>
           )}
           <a href={SHOP_URL} className="header-shop" target="_blank" rel="noreferrer">
-            Shop Meesho
+            {STORE_CONTENT.header.shopLink}
             <span aria-hidden="true">
               <svg
                 width="14"

@@ -1,45 +1,43 @@
 // Footer.js
 import React from 'react';
+import { STORE_ASSETS, STORE_CONTENT } from '../storeConstants';
 // import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 // import { faEnvelope, faTwitter, faFacebook, faInstagram } from '@fortawesome/free-brands-svg-icons';
 
 const Footer = () => {
   const openEmailApp = () => {
-    window.location.href = 'mailto:sportswear.boxer@gmail.com';
+    window.location.href = `mailto:${STORE_CONTENT.footer.contactEmail}`;
   };
 
   return (
     <footer className="site-footer">
       <div className="page-container footer-inner">
         <div className="footer-brand">
-          <img src="/images/boxer-logo.jpeg" alt="Boxer Sports Wear" />
-          <p>
-            Everyday essentials, from lowers and T-shirts to stolas, gamchas, Arabic rumals, and
-            shemaghs.
-          </p>
+          <img src={STORE_ASSETS.logo} alt={STORE_CONTENT.brand.name} />
+          <p>{STORE_CONTENT.footer.description}</p>
         </div>
 
         <div className="md:col-span-1">
           <h2 id="contact" className="text-lg md:text-xl font-bold mb-1 md:mb-4 text-left">
-            Contact Us
+            {STORE_CONTENT.footer.contactHeading}
           </h2>
           <p className="text-dark-25 text-sm md:text-lg font-bold">
-            Email:{' '}
+            {STORE_CONTENT.footer.emailLabel}{' '}
             <span
               onClick={openEmailApp}
               className="cursor-pointer font-normal hover:text-dark-35 hover:font-bold"
             >
-              sportswear.boxer@gmail.com
+              {STORE_CONTENT.footer.contactEmail}
             </span>
           </p>
         </div>
 
         <div className="md:col-span-1 flex flex-col items-baseline md:items-end">
           <h2 className="text-lg md:text-xl font-bold mb-1 md:mb-4 text-center md:text-left">
-            Follow Us
+            {STORE_CONTENT.footer.followHeading}
           </h2>
           <p>
-            <i>Coming soon...</i>
+            <i>{STORE_CONTENT.footer.followMessage}</i>
           </p>
 
           {/* <div className="flex space-x-4">    //------------------------> un-comment imports and below code for follow us icons 
@@ -57,7 +55,10 @@ const Footer = () => {
       </div>
 
       <div className="page-container footer-bottom">
-        <p>&copy; {new Date().getFullYear()} Boxer Sports Wear. All rights reserved.</p>
+        <p>
+          &copy; {new Date().getFullYear()} {STORE_CONTENT.brand.name}.{' '}
+          {STORE_CONTENT.footer.copyrightSuffix}
+        </p>
       </div>
     </footer>
   );

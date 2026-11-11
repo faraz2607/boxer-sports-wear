@@ -239,7 +239,8 @@ select {
   padding: 0 0 62px;
 }
 .carousel-frame {
-  height: clamp(300px, 38vw, 470px);
+  aspect-ratio: 16 / 9;
+  height: auto;
   position: relative;
   overflow: hidden;
   background: #273a2d;
@@ -1115,9 +1116,6 @@ select {
     padding: 0 8px;
     font-size: 10px;
   }
-  .carousel-frame {
-    height: clamp(310px, 85vw, 420px);
-  }
   .carousel-copy {
     width: calc(100% - 48px);
     top: 43%;
@@ -1913,9 +1911,6 @@ body {
     min-height: 310px;
     padding: 24px 0 46px;
   }
-  .hero-feature-grid .carousel-frame {
-    height: clamp(235px, 62vw, 320px);
-  }
   .catalogue-section {
     padding-top: 30px;
     padding-bottom: 34px;
@@ -2045,7 +2040,6 @@ body {
   padding: 0;
 }
 .hero-feature-grid .carousel-frame {
-  height: clamp(330px, 34vw, 440px);
   border-radius: 18px;
   box-shadow: 0 20px 45px #29352218;
 }
@@ -2093,9 +2087,6 @@ body {
   }
   .hero-feature-grid .hero-section h1 {
     font-size: clamp(42px, 10vw, 62px);
-  }
-  .hero-feature-grid .carousel-frame {
-    height: clamp(280px, 75vw, 380px);
   }
   .hero-feature-grid .carousel-state {
     min-height: 280px;
@@ -2383,6 +2374,10 @@ body {
 }
 .admin-filters label {
   flex-basis: 220px;
+}
+.admin-filters-carousel label {
+  flex: 1 1 460px;
+  max-width: 620px;
 }
 .admin-filter-control > span {
   line-height: 1.25;
@@ -2847,6 +2842,10 @@ body {
   .admin-filters label {
     flex: 1 1 100%;
     min-width: 0;
+  }
+  .admin-filters.admin-filters-carousel > label {
+    flex: 1 1 100%;
+    max-width: none;
   }
   .admin-filter-control {
     flex: 1 1 calc(50% - 6px);

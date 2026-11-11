@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { FILES } from './config';
+import { FILES } from '../../common/constants';
 import AdminSelect from './AdminSelect';
 
 const ItemModal = ({

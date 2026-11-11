@@ -4,7 +4,7 @@ import './index.css';
 import reportWebVitals from './reportWebVitals';
 import Index from './pages/home';
 import AdminApp from './pages/admin';
-import { ROUTES } from './common/siteConfig';
+import { ROUTES } from './common/constants';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 const App = () => {

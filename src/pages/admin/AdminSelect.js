@@ -7,6 +7,7 @@ const AdminSelect = ({
   options,
   value = '',
   onChange,
+  selectedLabelPrefix = '',
   emptyLabel = 'None',
   includeEmptyOption = true,
 }) => {
@@ -21,6 +22,9 @@ const AdminSelect = ({
   const selectedLabel =
     normalizedOptions.find((option) => option.value === value)?.label ||
     (value ? String(value) : emptyLabel);
+  const displayLabel = selectedLabelPrefix
+    ? `${selectedLabelPrefix}: ${selectedLabel}`
+    : selectedLabel;
 
   const updateMenuPosition = useCallback(() => {
     const trigger = triggerRef.current;
@@ -125,7 +129,7 @@ const AdminSelect = ({
         aria-expanded={open}
         onClick={() => setOpen((current) => !current)}
       >
-        <span className="catalogue-filter-value">{selectedLabel}</span>
+        <span className="catalogue-filter-value">{displayLabel}</span>
         <svg
           className="filter-chevron"
           aria-hidden="true"

@@ -3,22 +3,20 @@ import DataTable from './DataTable';
 import ItemModal from './ItemModal';
 import BulkDiscountModal from './BulkDiscountModal';
 import {
-  canonical,
   DATE_FILTER_OPTIONS,
   DAY_MS,
   FILES,
   ID_PREFIXES,
-  nextId,
   NOTICE_DURATION_MS,
   PAGE_SIZE,
   PRODUCT_BADGES,
   PRODUCT_CATEGORIES,
+  ROUTES,
   SORT_FILTER_OPTIONS,
-  validateRow,
-} from './config';
+} from '../../common/constants';
+import { canonical, nextId, validateRow } from './config';
 import { downloadRows, rowsFromCsv } from './csv';
 import AdminSelect from './AdminSelect';
-import { ROUTES } from '../../common/siteConfig';
 
 const AdminDashboard = ({ data, onDataChange, onLogout }) => {
   const [activeTab, setActiveTab] = useState('catalog');
@@ -313,12 +311,18 @@ const AdminDashboard = ({ data, onDataChange, onLogout }) => {
               </button>
             </div>
           </div>
-          <div className="admin-filters">
+          <div
+            className={`admin-filters${activeTab === 'carousel' ? ' admin-filters-carousel' : ''}`}
+          >
             <label>
-              <span>Search</span>
               <input
                 type="search"
-                placeholder="Search by name, ID, or details"
+                aria-label={`Search ${activeTab === 'catalog' ? 'products' : 'carousel slides'}`}
+                placeholder={
+                  activeTab === 'catalog'
+                    ? 'Search products by name, ID, or details'
+                    : 'Search carousel slides by title, ID, or image URL'
+                }
                 value={search}
                 onChange={(event) => setSearch(event.target.value)}
               />
@@ -326,10 +330,10 @@ const AdminDashboard = ({ data, onDataChange, onLogout }) => {
             {activeTab === 'catalog' && (
               <>
                 <div className="admin-filter-control">
-                  <span>Category</span>
                   <AdminSelect
                     name="category-filter"
                     label="Category filter"
+                    selectedLabelPrefix="Category"
                     value={categoryFilter}
                     options={[
                       { value: 'all', label: 'All categories' },
@@ -340,10 +344,10 @@ const AdminDashboard = ({ data, onDataChange, onLogout }) => {
                   />
                 </div>
                 <div className="admin-filter-control">
-                  <span>Badge</span>
                   <AdminSelect
                     name="badge-filter"
                     label="Badge filter"
+                    selectedLabelPrefix="Badge"
                     value={badgeFilter}
                     options={[
                       { value: 'all', label: 'All badges' },
@@ -354,10 +358,10 @@ const AdminDashboard = ({ data, onDataChange, onLogout }) => {
                   />
                 </div>
                 <div className="admin-filter-control">
-                  <span>Date added</span>
                   <AdminSelect
                     name="date-filter"
                     label="Date added filter"
+                    selectedLabelPrefix="Date added"
                     value={dateFilter}
                     options={DATE_FILTER_OPTIONS}
                     includeEmptyOption={false}
@@ -365,10 +369,10 @@ const AdminDashboard = ({ data, onDataChange, onLogout }) => {
                   />
                 </div>
                 <div className="admin-filter-control">
-                  <span>Sort</span>
                   <AdminSelect
                     name="sort-filter"
                     label="Sort products"
+                    selectedLabelPrefix="Sort"
                     value={sortFilter}
                     options={SORT_FILTER_OPTIONS}
                     includeEmptyOption={false}

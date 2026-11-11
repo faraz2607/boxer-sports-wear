@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react';
-import { ADMIN_PASSWORD, ADMIN_SECRET, NOTICE_DURATION_MS } from './config';
-import { ROUTES } from '../../common/siteConfig';
+import { ADMIN_PASSWORD, ADMIN_SECRET, NOTICE_DURATION_MS, ROUTES } from '../../common/constants';
 
 const AdminLogin = ({ onLogin, initialError = '' }) => {
   const [error, setError] = useState(initialError);

@@ -1,4 +1,4 @@
-import { FILES } from './config';
+import { FILES } from '../../common/constants';
 
 const displayDate = (value) => {
   if (!value) return '—';

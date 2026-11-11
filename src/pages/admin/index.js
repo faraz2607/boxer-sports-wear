@@ -1,9 +1,8 @@
 import { useCallback, useEffect, useState } from 'react';
 import AdminDashboard from './AdminDashboard';
 import AdminLogin from './AdminLogin';
-import { EMPTY_DATA } from './config';
+import { EMPTY_DATA, ROUTES } from '../../common/constants';
 import { clearSession, isSessionValid, loadData, saveData, saveSession } from './storage';
-import { ROUTES } from '../../common/siteConfig';
 
 const AdminApp = () => {
   const [path, setPath] = useState(window.location.pathname);

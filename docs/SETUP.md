@@ -8,6 +8,8 @@
 
 ## Install and run locally
 
+For adapting this codebase to another storefront, see [Set up another store](./NEXT_STORE_SETUP.md).
+
 From the repository root:
 
 ```bash
@@ -24,13 +26,13 @@ The app runs at `http://localhost:3000` by default. CRA reads `REACT_APP_*` vari
 
 ## Environment variables
 
-| Variable | Required | Purpose |
-| --- | --- | --- |
-| `REACT_APP_CATALOG_CSV_URL` | For catalog data | Public CSV export URL for the product Sheet tab. |
-| `REACT_APP_CAROUSEL_CSV_URL` | For featured carousel | Public CSV export URL for the carousel Sheet tab. |
-| `REACT_APP_MEESHO_SHOP_URL` | No | Default shop link; defaults to `https://www.meesho.com/`. Product rows can override it with `meeshoProductUrl`. |
-| `REACT_APP_ADMIN_PASSWORD` | To log in to admin | Client-side login password. Set a unique value. |
-| `REACT_APP_ADMIN_SECRET_KEY` | To store admin data/session | Secret used to derive the AES-GCM browser-storage key. Set a different unique value. |
+| Variable                     | Required                    | Purpose                                                                                                         |
+| ---------------------------- | --------------------------- | --------------------------------------------------------------------------------------------------------------- |
+| `REACT_APP_CATALOG_CSV_URL`  | For catalog data            | Public CSV export URL for the product Sheet tab.                                                                |
+| `REACT_APP_CAROUSEL_CSV_URL` | For featured carousel       | Public CSV export URL for the carousel Sheet tab.                                                               |
+| `REACT_APP_MEESHO_SHOP_URL`  | No                          | Default shop link; defaults to `https://www.meesho.com/`. Product rows can override it with `meeshoProductUrl`. |
+| `REACT_APP_ADMIN_PASSWORD`   | To log in to admin          | Client-side login password. Set a unique value.                                                                 |
+| `REACT_APP_ADMIN_SECRET_KEY` | To store admin data/session | Secret used to derive the AES-GCM browser-storage key. Set a different unique value.                            |
 
 Published Sheet URLs use this form:
 
@@ -60,18 +62,18 @@ Deploy the generated `build/` directory to a static host. Set the same `REACT_AP
 
 Useful repository scripts:
 
-| Command | Purpose |
-| --- | --- |
-| `npm start` | CRA development server. |
-| `npm run build` | Production static bundle. |
-| `npm test` | CRA/Jest test runner (interactive by default). |
-| `npm run format` | Format source files matched by the package script. |
-| `npm run format:check` | Check formatting for those source files. |
+| Command                | Purpose                                            |
+| ---------------------- | -------------------------------------------------- |
+| `npm start`            | CRA development server.                            |
+| `npm run build`        | Production static bundle.                          |
+| `npm test`             | CRA/Jest test runner (interactive by default).     |
+| `npm run format`       | Format source files matched by the package script. |
+| `npm run format:check` | Check formatting for those source files.           |
 
 ## Troubleshooting
 
 - **CSV is not configured:** set the relevant URL and restart/rebuild.
-- **HTTP 400 or empty data:** verify the spreadsheet ID, tab `gid`, headers/data rows, and public viewer access.
+- **HTTP 400 or unexpected local fallback content:** verify the spreadsheet ID, tab `gid`, headers/data rows, and public viewer access.
 - **Images fail to display:** check the URL is HTTPS and the Drive file is viewable without signing in. Drive may apply its own rate limits.
 - **Admin reports it cannot decrypt saved data:** restore the original secret or clear the affected site's local storage. Do not rotate the secret while expecting to retain that browser's stored data.
 - **Deep links return a host 404:** configure the static host's SPA fallback to `index.html`.

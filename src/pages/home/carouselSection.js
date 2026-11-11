@@ -1,9 +1,13 @@
 import { useEffect, useState } from 'react';
 import { csvValue, loadCsvText, parseCsvRows } from '../../common/csv';
-import { CSV_SOURCES } from '../../common/siteConfig';
+import { CSV_SOURCES } from '../../common/constants';
+import { STORE_ASSETS, STORE_CONTENT } from '../../common/storeConstants';
 import { resolveProductImage } from './products';
 
-const getSlideImage = (record) => {
+const getLocalSlideImage = (index) =>
+  STORE_ASSETS.carouselFallbackSlides[index % STORE_ASSETS.carouselFallbackSlides.length].imageUrl;
+
+const getSlideImage = (record, index) => {
   const driveLink = csvValue(
     record,
     'drivelink',
@@ -13,21 +17,44 @@ const getSlideImage = (record) => {
     'image',
   );
   const imageUrl = resolveProductImage(driveLink);
+  const localImageUrl = getLocalSlideImage(index);
   const driveId =
     driveLink.match(/\/file\/d\/([^/?]+)/)?.[1] || driveLink.match(/[?&]id=([^&]+)/)?.[1];
   return {
-    name: csvValue(record, 'imagename', 'name', 'title') || 'Boxer Sports Wear',
-    imageUrl,
-    fallbacks: driveId
-      ? [
-          `https://drive.google.com/thumbnail?id=${encodeURIComponent(driveId)}&sz=w1600`,
-          `https://drive.google.com/uc?export=view&id=${encodeURIComponent(driveId)}`,
-        ]
-      : [],
+    name: csvValue(record, 'imagename', 'name', 'title') || STORE_CONTENT.brand.name,
+    imageUrl: imageUrl || localImageUrl,
+    fallbacks: [
+      ...(driveId
+        ? [
+            `https://drive.google.com/thumbnail?id=${encodeURIComponent(driveId)}&sz=w1600`,
+            `https://drive.google.com/uc?export=view&id=${encodeURIComponent(driveId)}`,
+          ]
+        : []),
+      ...(imageUrl ? [localImageUrl] : []),
+    ],
     previewUrl: driveId
       ? `https://drive.google.com/file/d/${encodeURIComponent(driveId)}/preview`
       : '',
   };
+};
+
+const createLocalSlides = () =>
+  STORE_ASSETS.carouselFallbackSlides.map((slide) => ({
+    ...slide,
+    fallbacks: [],
+    previewUrl: '',
+  }));
+
+export const loadCarouselSlides = async () => {
+  try {
+    const csvText = await loadCsvText({ ...CSV_SOURCES.carousel, label: 'Carousel images' });
+    const loadedSlides = parseCsvRows(csvText).map(getSlideImage);
+    if (loadedSlides.length) return loadedSlides;
+    console.warn('Carousel sheet has no slides; showing the local carousel images.');
+  } catch (error) {
+    console.warn('Carousel sheet could not be loaded; showing the local carousel images.', error);
+  }
+  return createLocalSlides();
 };
 
 const CarouselSection = () => {
@@ -35,26 +62,12 @@ const CarouselSection = () => {
   const [activeSlide, setActiveSlide] = useState(1);
   const [transitionEnabled, setTransitionEnabled] = useState(true);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
 
   useEffect(() => {
     let active = true;
-    const loadSlides = async () => {
-      const csvText = await loadCsvText({ ...CSV_SOURCES.carousel, label: 'Carousel images' });
-      const loadedSlides = parseCsvRows(csvText)
-        .map(getSlideImage)
-        .filter((slide) => slide.imageUrl);
-      if (!loadedSlides.length)
-        throw new Error('No carousel images were found in the published sheet.');
-      return loadedSlides;
-    };
-
-    loadSlides()
+    loadCarouselSlides()
       .then((loadedSlides) => {
         if (active) setSlides(loadedSlides);
-      })
-      .catch((loadError) => {
-        if (active) setError(loadError.message || 'Carousel images could not be loaded.');
       })
       .finally(() => {
         if (active) setLoading(false);
@@ -91,19 +104,13 @@ const CarouselSection = () => {
   if (loading)
     return (
       <div className="carousel-state" role="status">
-        Loading featured styles…
-      </div>
-    );
-  if (error)
-    return (
-      <div className="carousel-state carousel-error" role="status">
-        {error} Configure the public <code>REACT_APP_CAROUSEL_CSV_URL</code> file link.
+        {STORE_CONTENT.carousel.loading}
       </div>
     );
 
   const slide = slides[logicalSlide];
   return (
-    <section className="store-carousel" aria-label="Featured styles">
+    <section className="store-carousel" aria-label={STORE_CONTENT.carousel.ariaLabel}>
       <div className="carousel-frame">
         <div
           className="carousel-track"
@@ -148,17 +155,17 @@ const CarouselSection = () => {
         </div>
         <div className="carousel-shade" />
         <div className="carousel-copy">
-          <p className="eyebrow">BOXER SPORTS WEAR &middot; THE COLLECTION</p>
+          <p className="eyebrow">{STORE_CONTENT.carousel.eyebrow}</p>
           <h2>{slide.name}</h2>
           <a href="#catalogue" className="carousel-shop-link">
-            Explore the collection <span aria-hidden="true">&#8595;</span>
+            {STORE_CONTENT.carousel.action} <span aria-hidden="true">&#8595;</span>
           </a>
         </div>
         <div className="carousel-controls">
           <button
             type="button"
             onClick={() => setActiveSlide((index) => index - 1)}
-            aria-label="Previous slide"
+            aria-label={STORE_CONTENT.carousel.previousSlide}
           >
             &#8592;
           </button>
@@ -169,19 +176,19 @@ const CarouselSection = () => {
           <button
             type="button"
             onClick={() => setActiveSlide((index) => index + 1)}
-            aria-label="Next slide"
+            aria-label={STORE_CONTENT.carousel.nextSlide}
           >
             &#8594;
           </button>
         </div>
-        <div className="carousel-dots" aria-label="Choose a featured image">
+        <div className="carousel-dots" aria-label={STORE_CONTENT.carousel.dotsLabel}>
           {slides.map((item, index) => (
             <button
               key={`${item.name}-${index}`}
               type="button"
               className={index === logicalSlide ? 'active' : ''}
               onClick={() => selectSlide(index)}
-              aria-label={`Show ${item.name}`}
+              aria-label={`${STORE_CONTENT.carousel.showSlideLabel} ${item.name}`}
               aria-current={index === logicalSlide ? 'true' : undefined}
             />
           ))}

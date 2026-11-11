@@ -1,4 +1,10 @@
-import { ADMIN_SECRET, DATA_KEY, EMPTY_DATA, SESSION_KEY, SESSION_MS } from './config';
+import {
+  ADMIN_SECRET,
+  DATA_KEY,
+  EMPTY_DATA,
+  SESSION_KEY,
+  SESSION_MS,
+} from '../../common/constants';
 
 const deriveKey = async () => {
   if (!ADMIN_SECRET || !window.crypto?.subtle)

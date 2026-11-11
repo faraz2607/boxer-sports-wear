@@ -13,7 +13,9 @@ The portal is mounted for `/admin/*`; `/login` redirects to `/admin/login`. It i
 - `ItemModal.js`: add/edit/delete/reset-ID confirmation modals, generated ID display, inline Meesho URL validation, and paste-copied-product action.
 - `BulkDiscountModal.js`: choose all or selected products and set one discount percentage for them.
 - `AdminSelect.js`: shared custom dropdown used in the product modal and catalog filters.
-- `config.js`: credentials, storage keys, file schemas, category/badge options, filter options, ID generation, and validation.
+- `../../common/constants.js`: application routes, admin credentials/storage settings, CSV schemas, filter options, and ID prefixes.
+- `../../common/storeConstants.js`: store categories/badges and store-specific copy, links, fallback prices, and image paths.
+- `config.js`: shared row normalization, ID generation, and validation helpers.
 - `csv.js`: CSV row normalization, upload validation, escaping, and downloads.
 - `storage.js`: AES-GCM encryption and decryption for local data and the sliding session.
 

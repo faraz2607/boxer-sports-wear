@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { STORE_CONTENT } from '../../common/storeConstants';
 import { loadProducts } from './products';
 
 const filterKey = (value) =>
@@ -152,11 +153,11 @@ const Catalogue = () => {
       .then((items) => {
         if (active) {
           setProducts(items);
-          if (!items.length) setError('No products were found in the published catalog.');
+          if (!items.length) setError(STORE_CONTENT.catalogue.noProductsError);
         }
       })
       .catch((loadError) => {
-        if (active) setError(loadError.message || 'The product catalog could not be loaded.');
+        if (active) setError(loadError.message || STORE_CONTENT.catalogue.loadError);
       })
       .finally(() => {
         if (active) setLoading(false);
@@ -177,7 +178,7 @@ const Catalogue = () => {
 
   const categories = useMemo(
     () => [
-      { value: 'all', label: 'All' },
+      { value: 'all', label: STORE_CONTENT.catalogue.allCategories },
       ...Array.from(
         new Set(products.map((product) => filterKey(product.category)).filter(Boolean)),
       ).map((value) => ({
@@ -250,19 +251,16 @@ const Catalogue = () => {
     <section id="catalogue" className="catalogue-section py-12 md:py-20">
       <div className="catalogue-heading">
         <div>
-          <p className="eyebrow">THE BOXER SPORTS WEAR COLLECTION</p>
+          <p className="eyebrow">{STORE_CONTENT.catalogue.eyebrow}</p>
           <h2>
-            Comfort, culture,
+            {STORE_CONTENT.catalogue.titleLead}
             <br />
-            <span>and everyday style.</span>
+            <span>{STORE_CONTENT.catalogue.titleEmphasis}</span>
           </h2>
-          <p className="section-copy">
-            Shop lowers, T-shirts, and the finishing touch: stolas, gamchas, Arabic rumals, and
-            shemaghs. Explore each item on Meesho.
-          </p>
+          <p className="section-copy">{STORE_CONTENT.catalogue.description}</p>
         </div>
         <div className="catalogue-note">
-          <span className="note-dot" /> Curated for comfort, priced for everyday
+          <span className="note-dot" /> {STORE_CONTENT.catalogue.note}
         </div>
       </div>
 
@@ -272,34 +270,27 @@ const Catalogue = () => {
           <input
             value={query}
             onChange={(event) => setQuery(event.target.value)}
-            placeholder="Search products"
-            aria-label="Search products"
+            placeholder={STORE_CONTENT.catalogue.searchLabel}
+            aria-label={STORE_CONTENT.catalogue.searchLabel}
           />
         </label>
         <FilterMenu
-          label="Category"
+          label={STORE_CONTENT.catalogue.categoryLabel}
           value={category}
           onChange={setCategory}
-          options={categories.map((item) => ({
-            ...item,
-            label: item.value === 'all' ? 'All categories' : item.label,
-          }))}
+          options={categories}
         />
         <FilterMenu
-          label="Badge"
+          label={STORE_CONTENT.catalogue.badgeLabel}
           value={badge}
           onChange={setBadge}
-          options={[{ value: 'all', label: 'All badges' }, ...badges]}
+          options={[{ value: 'all', label: STORE_CONTENT.catalogue.allBadges }, ...badges]}
         />
         <FilterMenu
-          label="Sort by"
+          label={STORE_CONTENT.catalogue.sortLabel}
           value={sort}
           onChange={setSort}
-          options={[
-            { value: 'featured', label: 'Featured' },
-            { value: 'price-low', label: 'Price: low to high' },
-            { value: 'price-high', label: 'Price: high to low' },
-          ]}
+          options={STORE_CONTENT.catalogue.sortOptions}
         />
         <button
           type="button"
@@ -308,12 +299,14 @@ const Catalogue = () => {
           disabled={!hasActiveFilters}
         >
           <Icon name="close" size={15} />
-          <span>Clear filters</span>
+          <span>{STORE_CONTENT.catalogue.clearFilters}</span>
         </button>
         <div className="catalogue-results" aria-live="polite">
           <span>
             <strong>{filteredProducts.length}</strong>{' '}
-            {filteredProducts.length === 1 ? 'Product' : 'Products'}
+            {filteredProducts.length === 1
+              ? STORE_CONTENT.catalogue.productLabel
+              : STORE_CONTENT.catalogue.productsLabel}
           </span>
         </div>
       </div>
@@ -321,7 +314,11 @@ const Catalogue = () => {
       {(loading || filtersPending) && (
         <div className="catalogue-loading-indicator" role="status">
           <Icon name="loader" className="results-spinner" />
-          <span>{loading ? 'Loading products…' : 'Updating product count…'}</span>
+          <span>
+            {loading
+              ? STORE_CONTENT.catalogue.loadingProducts
+              : STORE_CONTENT.catalogue.updatingCount}
+          </span>
         </div>
       )}
       {!loading && error && (
@@ -339,7 +336,10 @@ const Catalogue = () => {
                 href={product.shopUrl}
                 target="_blank"
                 rel="noreferrer"
-                aria-label={`Explore ${product.name} on Meesho`}
+                aria-label={STORE_CONTENT.catalogue.exploreProductLabel.replace(
+                  '{product}',
+                  product.name,
+                )}
               >
                 <img
                   src={product.imageUrl}
@@ -409,7 +409,7 @@ const Catalogue = () => {
                   target="_blank"
                   rel="noreferrer"
                 >
-                  Buy Now
+                  {STORE_CONTENT.catalogue.buyNow}
                 </a>
               </div>
             </article>
@@ -418,16 +418,16 @@ const Catalogue = () => {
 
       {!loading && !error && !filteredProducts.length && !filtersPending && (
         <div className="empty-state">
-          <h3>No products found</h3>
-          <p>Try another search or adjust your filters.</p>
-          <button onClick={clearFilters}>Clear filters</button>
+          <h3>{STORE_CONTENT.catalogue.emptyTitle}</h3>
+          <p>{STORE_CONTENT.catalogue.emptyDescription}</p>
+          <button onClick={clearFilters}>{STORE_CONTENT.catalogue.clearFilters}</button>
         </div>
       )}
       {!loading && !error && filteredProducts.length > visibleItems && (
         <div
           className="catalogue-scroll-sentinel"
           ref={scrollSentinel}
-          aria-label="More products load as you scroll"
+          aria-label={STORE_CONTENT.catalogue.moreProductsLabel}
         />
       )}
 
@@ -439,18 +439,14 @@ const Catalogue = () => {
           <span />
         </div>
         <div className="fabric-guide-copy">
-          <p className="eyebrow">A CLOSER LOOK AT FABRIC &amp; TEXTILE</p>
-          <h3>Made for comfort. Styled your way.</h3>
-          <p>
-            From easy everyday lowers and tees to expressive traditional wraps, the right textile
-            makes every piece feel personal. Open the Meesho listing for each item's exact fabric
-            composition, fit, and care instructions.
-          </p>
+          <p className="eyebrow">{STORE_CONTENT.catalogue.fabricGuide.eyebrow}</p>
+          <h3>{STORE_CONTENT.catalogue.fabricGuide.title}</h3>
+          <p>{STORE_CONTENT.catalogue.fabricGuide.description}</p>
         </div>
         <div className="fabric-guide-points">
-          <span>Fabric composition</span>
-          <span>Fit &amp; feel</span>
-          <span>Care instructions</span>
+          {STORE_CONTENT.catalogue.fabricGuide.points.map((point) => (
+            <span key={point}>{point}</span>
+          ))}
         </div>
       </aside>
     </section>

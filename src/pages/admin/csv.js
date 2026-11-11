@@ -1,5 +1,6 @@
 import { csvValue, parseCsvRows } from '../../common/csv';
-import { canonical, FILES, ID_PREFIXES, nextId, validateRow } from './config';
+import { FILES, ID_PREFIXES } from '../../common/constants';
+import { canonical, nextId, validateRow } from './config';
 
 const normalizeHeaders = (row) =>
   Object.fromEntries(
